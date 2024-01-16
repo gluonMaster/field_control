@@ -1,38 +1,37 @@
-const inputField = document.getElementById('inputField');
-const referenceWord = 'Hallo';
+const referenceWord = "Hallo";
+const editableDiv = document.getElementById('inputField');
 
-inputField.addEventListener('input', () => {
-    const enteredText = inputField.innerText;
-    let l=enteredText.length;
+editableDiv.addEventListener('input', handleInput);
 
-    for (let i = 0; i < l; i++) {
+function setCursorToEnd() {
+    const range = document.createRange();
+    const selection = window.getSelection();
 
-        if (referenceWord[i] === enteredText[i]) {
-            let range = document.createRange();
-            range.setStart(inputField.childNodes[0], i);
-            range.setEnd(inputField.childNodes[0], i+1);
-            let selection = window.getSelection();
-            selection.addRange(range)
-            //selection.getRangeAt(0);
-            //inputField.setSelectionRange(i, i + 1);
-            document.execCommand('foreColor', false, 'green');
-            selection.removeAllRanges();
-            range=null
-            //inputField.classList.remove('incorrect');
-            //inputField.classList.add('correct');
+    range.selectNodeContents(editableDiv);
+    range.collapse(false);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+function handleInput() {
+    const enteredText = editableDiv.innerText;
+    editableDiv.innerHTML = '';
+
+    for (let i = 0; i < enteredText.length; i++) {
+        const enteredSymbol = enteredText.charAt(i);
+        const referenceSymbol = referenceWord.charAt(i);
+
+        const span = document.createElement('span');
+        span.textContent = enteredSymbol;
+
+        if (enteredSymbol === referenceSymbol) {
+            span.classList.add('correct');
         } else {
-            let range = document.createRange();
-            range.setStart(inputField.childNodes[0], i);
-            range.setEnd(inputField.childNodes[0], i+1);
-            let selection = window.getSelection();
-            selection.addRange(range);
-            //inputField.setSelectionRange(i, i + 1);
-            document.execCommand('foreColor', false, 'red');
-            selection.removeAllRanges();
-            range=null
-            //inputField.classList.remove('correct');
-            //inputField.classList.add('incorrect');
+            span.classList.add('incorrect');
         }
-    }
-});
 
+        editableDiv.appendChild(span);
+    }
+    setCursorToEnd();
+}
